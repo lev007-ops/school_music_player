@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      # Наружу не торчит — только для Caddy на этом же сервере.
+      - "127.0.0.1:${APP_PORT:-8080}:8000"
+    environment:
+      # Пояс по умолчанию, если браузер создателя события его не передал.
+      APP_TIMEZONE: ${APP_TIMEZONE:-Asia/Yekaterinburg}
+      APP_MAX_UPLOAD_MB: ${APP_MAX_UPLOAD_MB:-300}
+    volumes:
+      - ./data:/data

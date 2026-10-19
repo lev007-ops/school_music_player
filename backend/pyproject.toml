@@ -1,0 +1,25 @@
+[project]
+name = "school-music-player"
+version = "1.0.0"
+description = "Сервис управления школьной музыкой на переменах"
+authors = [{ name = "Барях Лев, ученик 10А класса школы № 9 г. Пермь" }]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115,<0.116",
+    "uvicorn[standard]>=0.34",
+    "sqlalchemy>=2.0.40",
+    "alembic>=1.15",
+    "pydantic>=2.11",
+    "pydantic-settings>=2.9",
+    "python-multipart>=0.0.20",
+    "mutagen>=1.47",
+    "tzdata>=2025.2",
+]
+
+[tool.uv]
+package = false
+
+[dependency-groups]
+dev = [
+    "httpx>=0.28.1",
+]
