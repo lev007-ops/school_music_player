@@ -24,7 +24,7 @@ export function Home() {
   const device = deviceSession.get();
 
   return (
-    <div className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-4 py-10">
+    <div className="mx-auto flex min-h-[calc(100dvh-env(safe-area-inset-top)-env(safe-area-inset-bottom))] max-w-lg flex-col justify-center px-4 py-8 sm:py-10">
       <div className="mb-8 text-center">
         <div className="mb-3 text-5xl">🎵</div>
         <h1 className="text-3xl font-bold">Школьная музыка</h1>
@@ -202,7 +202,7 @@ function CreateEventDialog({ onClose }: { onClose: () => void }) {
         <div>
           <div className="mb-1 flex items-center justify-between">
             <label className="label mb-0">Расписание перемен</label>
-            <label className="cursor-pointer text-sm text-indigo-600 hover:underline">
+            <label className="-my-2 cursor-pointer py-2 text-sm text-indigo-600 hover:underline">
               Загрузить .txt
               <input
                 type="file"
@@ -275,7 +275,7 @@ function JoinDialog({ onClose }: { onClose: () => void }) {
         <div>
           <label className="label">Код события</label>
           <input
-            className="input text-center font-mono text-3xl tracking-[0.5em]"
+            className="input text-center font-mono text-3xl tracking-[0.4em] sm:text-3xl"
             inputMode="numeric"
             autoComplete="one-time-code"
             value={code}
@@ -321,7 +321,17 @@ function AdminLoginDialog({ onClose }: { onClose: () => void }) {
       <form onSubmit={submit} className="space-y-4">
         <div>
           <label className="label">Пароль администратора</label>
-          <input className="input font-mono" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="16 символов" autoFocus autoComplete="current-password" />
+          <input
+            className="input font-mono"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="16 символов"
+            autoFocus
+            autoComplete="current-password"
+            autoCapitalize="off"
+            autoCorrect="off"
+            spellCheck={false}
+          />
         </div>
         <ErrorText>{error}</ErrorText>
         <button className="btn-primary w-full" disabled={busy || !password.trim()}>

@@ -1,25 +1,47 @@
 @import "tailwindcss";
 
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+  body {
+    /* Учитываем «чёлку» и скруглённые углы экрана (viewport-fit=cover). */
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    -webkit-tap-highlight-color: transparent;
+  }
+  button,
+  a,
+  label,
+  input,
+  select,
+  textarea {
+    /* Без задержки и зума по двойному тапу. */
+    touch-action: manipulation;
+  }
+}
+
 @utility btn {
-  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50;
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition select-none disabled:cursor-not-allowed disabled:opacity-50 sm:min-h-0;
 }
 @utility btn-primary {
-  @apply btn bg-indigo-600 text-white hover:bg-indigo-500;
+  @apply btn bg-indigo-600 text-white hover:bg-indigo-500 active:bg-indigo-700;
 }
 @utility btn-secondary {
-  @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-100;
+  @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-100 active:bg-slate-200;
 }
 @utility btn-danger {
-  @apply btn bg-rose-600 text-white hover:bg-rose-500;
+  @apply btn bg-rose-600 text-white hover:bg-rose-500 active:bg-rose-700;
 }
 @utility btn-ghost {
-  @apply btn text-slate-600 hover:bg-slate-100;
+  @apply btn text-slate-600 hover:bg-slate-100 active:bg-slate-200;
 }
 @utility icon-btn {
-  @apply inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 disabled:opacity-40;
+  @apply inline-flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition select-none hover:bg-slate-100 hover:text-slate-900 active:bg-slate-200 disabled:opacity-40 sm:h-8 sm:w-8;
 }
 @utility input {
-  @apply w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100;
+  /* 16px на телефонах — иначе iOS увеличивает страницу при фокусе. */
+  @apply w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-base outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100 sm:text-sm;
 }
 @utility card {
   @apply rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5;

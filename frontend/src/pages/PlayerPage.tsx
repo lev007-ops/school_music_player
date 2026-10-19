@@ -100,7 +100,7 @@ export function PlayerPage({ token }: { token: string }) {
 
       {snap.blocked && (
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-sm">
-          <button className="btn-primary px-8 py-5 text-lg" onClick={() => void player.unlock()}>
+          <button className="btn-primary w-full max-w-sm px-8 py-5 text-lg" onClick={() => void player.unlock()}>
             ▶ Нажмите, чтобы включить звук
           </button>
         </div>

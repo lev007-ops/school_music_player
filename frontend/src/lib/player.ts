@@ -11,6 +11,14 @@ const TICK_MS = 200;
 export interface PlayerSnapshot extends DeviceStatus {
   loading: boolean;
   sinkSupported: boolean;
+  /** false на iOS: громкость <audio> там только для чтения, её меняют кнопками телефона. */
+  volumeSupported: boolean;
+}
+
+function detectVolumeSupport(): boolean {
+  const probe = new Audio();
+  probe.volume = 0.5;
+  return probe.volume === 0.5;
 }
 
 /**
@@ -37,6 +45,7 @@ class SyncPlayer {
     drift_ms: null,
     error: null,
     sinkSupported: "setSinkId" in HTMLMediaElement.prototype,
+    volumeSupported: detectVolumeSupport(),
   };
 
   constructor() {
@@ -73,6 +82,7 @@ class SyncPlayer {
   }
 
   reset() {
+    if ("mediaSession" in navigator) navigator.mediaSession.metadata = null;
     this.audio.pause();
     this.audio.removeAttribute("src");
     this.audio.load();
@@ -197,6 +207,10 @@ class SyncPlayer {
         });
         this.loadedTrackId = track.id;
         this.update({ error: null });
+        // Название на экране блокировки и в шторке уведомлений телефона.
+        if ("mediaSession" in navigator) {
+          navigator.mediaSession.metadata = new MediaMetadata({ title: track.title, artist: track.artist, album: "Школьная музыка" });
+        }
       } catch (e) {
         this.update({ error: e instanceof Error ? e.message : String(e), loading: false });
         return;

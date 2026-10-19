@@ -65,23 +65,28 @@ export function OutputControls({ prefix }: { prefix: string }) {
   };
 
   const hasLabels = devices.some((d) => d.label);
+  const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
 
   return (
     <div className="space-y-3">
       <div>
         <label className="label flex items-center justify-between">
           <span>Громкость</span>
-          <span className="text-slate-500">{Math.round(volume * 100)}%</span>
+          {player.snapshot.volumeSupported && <span className="text-slate-500">{Math.round(volume * 100)}%</span>}
         </label>
-        <input
-          type="range"
-          min={0}
-          max={1}
-          step={0.01}
-          value={volume}
-          onChange={(e) => setVolume(Number(e.target.value))}
-          className="w-full accent-indigo-600"
-        />
+        {player.snapshot.volumeSupported ? (
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={volume}
+            onChange={(e) => setVolume(Number(e.target.value))}
+            className="h-8 w-full cursor-pointer accent-indigo-600 sm:h-auto"
+          />
+        ) : (
+          <p className="text-sm text-slate-500">На этом устройстве громкость регулируется кнопками на корпусе.</p>
+        )}
       </div>
       <div>
         <label className="label">Устройство вывода</label>
@@ -105,7 +110,9 @@ export function OutputControls({ prefix }: { prefix: string }) {
           </div>
         ) : (
           <p className="text-sm text-slate-500">
-            Этот браузер не поддерживает выбор устройства вывода — используется системное. Подойдёт Chrome, Edge или Firefox.
+            {coarsePointer
+              ? "Звук идёт через системный выход. Колонку или наушники (Bluetooth, AirPlay) выберите в настройках телефона."
+              : "Этот браузер не поддерживает выбор устройства вывода — используется системное. Подойдёт Chrome, Edge или Firefox."}
           </p>
         )}
         {error && <p className="mt-1 text-sm text-rose-600">{error}</p>}

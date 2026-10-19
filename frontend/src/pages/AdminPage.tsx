@@ -59,18 +59,18 @@ export function AdminPage({ token }: { token: string }) {
   }, [state, info, token]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-6">
-      <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
-        <div className="min-w-0">
+    <div className="mx-auto max-w-6xl px-3 py-4 sm:px-4 sm:py-6">
+      <header className="mb-4 flex flex-wrap items-start justify-between gap-x-4 gap-y-3 sm:mb-6">
+        <div className="min-w-0 flex-1">
           <div className="text-xs font-medium uppercase tracking-wide text-slate-500">Управление событием</div>
-          <h1 className="truncate text-2xl font-bold">{info?.name ?? "…"}</h1>
+          <h1 className="truncate text-xl font-bold sm:text-2xl">{info?.name ?? "…"}</h1>
           {info && (
-            <div className="text-sm text-slate-500">
+            <div className="truncate text-sm text-slate-500">
               {formatDate(info.date)} · {info.timezone}
             </div>
           )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex shrink-0 gap-2">
           <button className="btn-secondary" onClick={() => navigate("/")}>
             На главную
           </button>
@@ -83,8 +83,10 @@ export function AdminPage({ token }: { token: string }) {
       {!connected && <div className="mb-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">Нет связи с сервером, переподключаемся…</div>}
       {error && (
         <div className="mb-4 flex items-start justify-between gap-2 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-700">
-          <span>{error}</span>
-          <button onClick={() => setError("")}>✕</button>
+          <span className="min-w-0 pt-0.5 wrap-break-word">{error}</span>
+          <button className="icon-btn -my-2 -mr-2 shrink-0 text-rose-700 hover:bg-rose-100" aria-label="Скрыть" onClick={() => setError("")}>
+            ✕
+          </button>
         </div>
       )}
 
@@ -116,11 +118,11 @@ export function AdminPage({ token }: { token: string }) {
 
 function Segmented<T extends string>({ value, options, onChange }: { value: T; options: [T, string][]; onChange: (v: T) => void }) {
   return (
-    <div className="inline-flex flex-wrap rounded-xl bg-slate-100 p-1">
+    <div className="flex w-full rounded-xl bg-slate-100 p-1 sm:inline-flex sm:w-auto sm:flex-wrap">
       {options.map(([v, label]) => (
         <button
           key={v}
-          className={`rounded-lg px-3 py-1.5 text-sm transition ${value === v ? "bg-white font-medium shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
+          className={`min-h-10 flex-1 rounded-lg px-2 py-1.5 text-sm leading-tight transition sm:min-h-0 sm:flex-none sm:px-3 ${value === v ? "bg-white font-medium shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
           onClick={() => v !== value && onChange(v)}
         >
           {label}
@@ -235,7 +237,10 @@ function QueuePanel({ state, call, token }: { state: EventState; call: Call; tok
   const [dropActive, setDropActive] = useState(false);
   const [toDelete, setToDelete] = useState<Track | null>(null);
   const [editing, setEditing] = useState<Track | null>(null);
+  const [menuId, setMenuId] = useState<number | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
+  const menuIndex = order.findIndex((t) => t.id === menuId);
+  const menuTrack = menuIndex >= 0 ? order[menuIndex] : null;
 
   useEffect(() => {
     if (dragId === null) setOrder(state.tracks);
@@ -289,11 +294,11 @@ function QueuePanel({ state, call, token }: { state: EventState; call: Call; tok
             {state.tracks.length} треков · {formatDuration(totalDuration)}
           </div>
         </div>
-        <div className="flex gap-2">
-          <button className="btn-secondary" onClick={() => void call("/admin/tracks/shuffle", { method: "POST" }).catch(ignore)} disabled={state.tracks.length < 2}>
+        <div className="flex w-full gap-2 sm:w-auto">
+          <button className="btn-secondary flex-1 sm:flex-none" onClick={() => void call("/admin/tracks/shuffle", { method: "POST" }).catch(ignore)} disabled={state.tracks.length < 2}>
             🔀 Перемешать
           </button>
-          <button className="btn-primary" onClick={() => fileInput.current?.click()} disabled={uploading}>
+          <button className="btn-primary flex-1 sm:flex-none" onClick={() => fileInput.current?.click()} disabled={uploading}>
             + Добавить музыку
           </button>
           <input
@@ -314,7 +319,8 @@ function QueuePanel({ state, call, token }: { state: EventState; call: Call; tok
 
       {order.length === 0 ? (
         <div className="rounded-xl border-2 border-dashed border-slate-200 py-10 text-center text-slate-500">
-          Перетащите сюда аудиофайлы или нажмите «Добавить музыку»
+          <span className="hidden sm:inline">Перетащите сюда аудиофайлы или нажмите «Добавить музыку»</span>
+          <span className="sm:hidden">Нажмите «Добавить музыку», чтобы загрузить треки</span>
         </div>
       ) : (
         <ul className="mt-2 divide-y divide-slate-100">
@@ -340,7 +346,7 @@ function QueuePanel({ state, call, token }: { state: EventState; call: Call; tok
                 }}
                 className={`group flex items-center gap-2 py-2 ${dragId === t.id ? "opacity-40" : ""} ${t.enabled ? "" : "opacity-50"}`}
               >
-                <span className="cursor-grab select-none px-1 text-slate-300 active:cursor-grabbing" title="Перетащите, чтобы изменить порядок">
+                <span className="hidden cursor-grab select-none px-1 text-slate-300 active:cursor-grabbing sm:inline" title="Перетащите, чтобы изменить порядок">
                   ⠿
                 </span>
                 <span className={`w-6 text-right text-xs tabular-nums ${current ? "text-indigo-600" : "text-slate-400"}`}>
@@ -352,7 +358,7 @@ function QueuePanel({ state, call, token }: { state: EventState; call: Call; tok
                   </div>
                   <div className="truncate text-xs text-slate-400" title={t.original_name}>
                     {formatDuration(t.duration)}
-                    <span className="ml-2">{t.original_name}</span>
+                    <span className="ml-2 hidden sm:inline">{t.original_name}</span>
                     {t.loop && <span className="ml-2 text-indigo-600">зациклен</span>}
                     {!t.enabled && <span className="ml-2">пропускается</span>}
                   </div>
@@ -364,10 +370,10 @@ function QueuePanel({ state, call, token }: { state: EventState; call: Call; tok
                   <button className="icon-btn hidden sm:inline-flex" title="Играть следующим" onClick={() => void call("/admin/tracks/play-next", { method: "POST", body: { track_id: t.id } }).catch(ignore)}>
                     ⤵
                   </button>
-                  <button className={`icon-btn ${t.loop ? "bg-indigo-50 text-indigo-600" : ""}`} title="Зациклить трек" onClick={() => patchTrack(t, { loop: !t.loop })}>
+                  <button className={`icon-btn hidden sm:inline-flex ${t.loop ? "bg-indigo-50 text-indigo-600" : ""}`} title="Зациклить трек" onClick={() => patchTrack(t, { loop: !t.loop })}>
                     🔁
                   </button>
-                  <button className="icon-btn" title={t.enabled ? "Пропускать" : "Включить"} onClick={() => patchTrack(t, { enabled: !t.enabled })}>
+                  <button className="icon-btn hidden sm:inline-flex" title={t.enabled ? "Пропускать" : "Включить"} onClick={() => patchTrack(t, { enabled: !t.enabled })}>
                     {t.enabled ? "◉" : "○"}
                   </button>
                   <button className="icon-btn hidden sm:inline-flex" title="Выше" disabled={i === 0} onClick={() => { const n = move(i, i - 1); if (n) saveOrder(n); }}>
@@ -376,11 +382,14 @@ function QueuePanel({ state, call, token }: { state: EventState; call: Call; tok
                   <button className="icon-btn hidden sm:inline-flex" title="Ниже" disabled={i === order.length - 1} onClick={() => { const n = move(i, i + 1); if (n) saveOrder(n); }}>
                     ↓
                   </button>
-                  <button className="icon-btn" title="Изменить название и исполнителя" onClick={() => setEditing(t)}>
+                  <button className="icon-btn hidden sm:inline-flex" title="Изменить название и исполнителя" onClick={() => setEditing(t)}>
                     ✎
                   </button>
-                  <button className="icon-btn hover:text-rose-600" title="Удалить" onClick={() => setToDelete(t)}>
+                  <button className="icon-btn hidden hover:text-rose-600 sm:inline-flex" title="Удалить" onClick={() => setToDelete(t)}>
                     🗑
+                  </button>
+                  <button className="icon-btn text-xl sm:hidden" aria-label="Действия с треком" onClick={() => setMenuId(t.id)}>
+                    ⋯
                   </button>
                 </div>
               </li>
@@ -399,7 +408,72 @@ function QueuePanel({ state, call, token }: { state: EventState; call: Call; tok
         />
       )}
       {editing && <RenameDialog track={editing} onClose={() => setEditing(null)} onSave={(body) => patchTrack(editing, body)} />}
+      {menuTrack && (
+        <Modal title={trackLabel(menuTrack)} onClose={() => setMenuId(null)}>
+          <TrackMenu
+            track={menuTrack}
+            index={menuIndex}
+            count={order.length}
+            onAction={(action) => {
+              const t = menuTrack;
+              const i = menuIndex;
+              // Перемещение оставляет меню открытым, чтобы можно было сдвинуть трек на несколько позиций.
+              if (action === "up" || action === "down") {
+                const n = move(i, action === "up" ? i - 1 : i + 1);
+                if (n) saveOrder(n);
+                return;
+              }
+              setMenuId(null);
+              if (action === "play") void call("/admin/player/jump", { method: "POST", body: { track_id: t.id } }).catch(ignore);
+              if (action === "next") void call("/admin/tracks/play-next", { method: "POST", body: { track_id: t.id } }).catch(ignore);
+              if (action === "loop") patchTrack(t, { loop: !t.loop });
+              if (action === "enable") patchTrack(t, { enabled: !t.enabled });
+              if (action === "edit") setEditing(t);
+              if (action === "delete") setToDelete(t);
+            }}
+          />
+        </Modal>
+      )}
     </section>
+  );
+}
+
+type TrackAction = "play" | "next" | "up" | "down" | "loop" | "enable" | "edit" | "delete";
+
+function TrackMenu({ track, index, count, onAction }: { track: Track; index: number; count: number; onAction: (a: TrackAction) => void }) {
+  const items: [TrackAction, string, string, boolean?][] = [
+    ["play", "▶", "Играть сейчас"],
+    ["next", "⤵", "Играть следующим"],
+    ["up", "↑", "Переместить выше", index <= 0],
+    ["down", "↓", "Переместить ниже", index >= count - 1],
+    ["loop", "🔁", track.loop ? "Снять зацикливание" : "Зациклить трек"],
+    ["enable", track.enabled ? "○" : "◉", track.enabled ? "Пропускать трек" : "Снова включить трек"],
+    ["edit", "✎", "Изменить название и исполнителя"],
+    ["delete", "🗑", "Удалить"],
+  ];
+  return (
+    <div className="-mx-2 -mt-2">
+      <p className="mb-2 truncate px-2 text-xs text-slate-400">
+        {formatDuration(track.duration)} · {track.original_name}
+      </p>
+      <ul>
+        {items.map(([action, icon, label, disabled]) => (
+          <li key={action}>
+            <button
+              className={`flex min-h-12 w-full items-center gap-3 rounded-xl px-2 text-left transition active:bg-slate-100 disabled:opacity-40 ${
+                action === "delete" ? "text-rose-600" : ""
+              }`}
+              disabled={disabled}
+              onClick={() => onAction(action)}
+            >
+              <span className="w-6 text-center text-slate-500">{icon}</span>
+              <span>{label}</span>
+              {action === "up" || action === "down" ? <span className="ml-auto text-sm tabular-nums text-slate-400">{index + 1} из {count}</span> : null}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
 

@@ -20,7 +20,7 @@ export function Modal({ title, onClose, children, wide }: Props) {
       <div
         role="dialog"
         aria-modal="true"
-        className={`relative max-h-[95vh] w-full overflow-y-auto rounded-t-2xl bg-white p-5 shadow-xl sm:rounded-2xl sm:p-6 ${
+        className={`relative max-h-[90dvh] w-full overflow-y-auto overscroll-contain rounded-t-2xl bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] shadow-xl sm:rounded-2xl sm:p-6 ${
           wide ? "sm:max-w-xl" : "sm:max-w-md"
         }`}
       >
@@ -53,7 +53,7 @@ export function ConfirmModal({ title, text, confirmLabel, onConfirm, onClose }: 
   return (
     <Modal title={title} onClose={onClose}>
       <p className="mb-5 text-sm text-slate-600">{text}</p>
-      <div className="flex justify-end gap-2">
+      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
         <button className="btn-secondary" onClick={onClose}>
           Отмена
         </button>

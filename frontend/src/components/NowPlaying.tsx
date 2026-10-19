@@ -1,3 +1,4 @@
+import { useState, type PointerEvent } from "react";
 import { clock } from "../lib/clock";
 import { formatClock, formatDuration, trackLabel } from "../lib/format";
 import { useTicker } from "../lib/useEventConnection";
@@ -30,9 +31,17 @@ interface Props {
 
 export function NowPlaying({ state, onSeek }: Props) {
   useTicker(250);
+  // Доля трека под пальцем/курсором во время перетаскивания; перемотка отправляется при отпускании.
+  const [drag, setDrag] = useState<number | null>(null);
   const track = state.track;
-  const pos = currentPosition(state);
+  const seekable = !!onSeek && !!track;
+  const pos = drag !== null && track ? drag * track.duration : currentPosition(state);
   const pct = track ? (pos / track.duration) * 100 : 0;
+
+  const fraction = (e: PointerEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    return Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  };
 
   return (
     <div>
@@ -51,14 +60,23 @@ export function NowPlaying({ state, onSeek }: Props) {
       </div>
       <div className="mt-3">
         <div
-          className={`relative h-2 overflow-hidden rounded-full bg-slate-200 ${onSeek && track ? "cursor-pointer" : ""}`}
-          onClick={(e) => {
-            if (!onSeek || !track) return;
-            const rect = e.currentTarget.getBoundingClientRect();
-            onSeek(((e.clientX - rect.left) / rect.width) * track.duration);
+          className={`-my-3 py-3 ${seekable ? "cursor-pointer touch-none" : ""}`}
+          onPointerDown={(e) => {
+            if (!seekable) return;
+            e.currentTarget.setPointerCapture(e.pointerId);
+            setDrag(fraction(e));
           }}
+          onPointerMove={(e) => drag !== null && setDrag(fraction(e))}
+          onPointerUp={(e) => {
+            if (drag === null || !onSeek || !track) return;
+            onSeek(fraction(e) * track.duration);
+            setDrag(null);
+          }}
+          onPointerCancel={() => setDrag(null)}
         >
-          <div className="absolute inset-y-0 left-0 bg-indigo-500" style={{ width: `${pct}%` }} />
+          <div className={`relative overflow-hidden rounded-full bg-slate-200 transition-[height] ${drag !== null ? "h-3" : "h-2"}`}>
+            <div className="absolute inset-y-0 left-0 bg-indigo-500" style={{ width: `${pct}%` }} />
+          </div>
         </div>
         <div className="mt-1 flex justify-between text-xs tabular-nums text-slate-500">
           <span>{formatDuration(pos)}</span>
